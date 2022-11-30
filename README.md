@@ -1,3 +1,3 @@
 # Chess-engine
-Chess-engine with alpha-beta pruning written in Rust.
+Chess-engine with alpha-beta pruning written in C++
 
