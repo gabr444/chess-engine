@@ -1,12 +1,26 @@
 #include <string>
+#include <vector>
 
 class Board
 {
-    private:
-        std::string fen; 
-        char board[8][8];
-
     public:
+        std::string fen; 
+        std::vector<std::vector<char>> board;
+
+        Board()
+        {
+            for(int i=0;i<8;i++)
+            {
+                std::vector<char> subVector;
+                for(int j=0;j<8;j++)
+                {
+                    subVector.push_back('.');
+                }
+                board.push_back(subVector);
+            }
+            parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        }
+
         std::string get_FEN()
         {
             fen = "";
@@ -71,6 +85,18 @@ class Board
                     board[idx][cnt] = fen[i];
                     cnt+=1;
                 }
+            }
+        }
+
+        void printBoard()
+        {
+            for(int i=0;i<8;i++)
+            {
+                for(int j=0;j<8;j++)
+                {
+                    printf("%c ", board[i][j]);
+                }
+                printf("\n");
             }
         }
 };

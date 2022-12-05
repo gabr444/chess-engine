@@ -11,13 +11,14 @@ class Server
             if(curl) 
             {
                 CURLcode res;
-                curl_easy_setopt(curl, CURLOPT_URL, host);
-                res = curl_easy_perform(curl);
             }
         }
 
-        void sendMsg(std::string data)
+        void sendMove(std::string data)
         {
+            CURLcode res;
+            curl_easy_setopt(curl, CURLOPT_URL, host);
+            res = curl_easy_perform(curl);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
             curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, 1000);
         }

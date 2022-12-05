@@ -9,15 +9,11 @@
 
 class Engine
 {
-    private:
         std::string fen; 
         char **board;
-        Moves moves(board);
-
-    public:
-
+        Moves calculate_moves;
         // Calculate moves. Tuple input as following: <x, y>
-        std::vector<int> calculate_moves(std::tuple<int, int> pos)
+        std::vector<std::tuple<int, int>> get_moves(std::tuple<int, int> pos)
         {
             std::vector<std::tuple<int, int>> moves;
             auto diagonal = [] (int a) {
@@ -27,12 +23,12 @@ class Engine
             switch(tolower(board[std::get<0>(pos)][std::get<1>(pos)]))
             {
                 case 'p':
-                    moves = pawn_move(pos);
+                    moves = calculate_moves.pawn_move(pos);
                 case 'r':
-                    moves = rook_move(pos);
+                    moves = calculate_moves.rook_move(pos);
             }
 
         
-            return;
+            return moves;
         }
 };

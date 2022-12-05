@@ -8,15 +8,14 @@
 
 class Moves
 {
-    char **board;
+    public:
+        std::vector<std::vector<char>> board;
 
+        Moves(std::vector<std::vector<char>> pointer)
+        {
+            board = pointer;
+        }
 
-    Moves(char **pointerBoard)
-    {
-        board = pointerBoard;
-    }
-
-    private:
         bool is_out_of_bounds(int y, int x)
         {
             bool out_of_bounds = false;
@@ -24,413 +23,426 @@ class Moves
             {
                 out_of_bounds = true;
             }
+
+                return out_of_bounds;
         }
 
-    public:
         std::vector<std::tuple<int, int>> pawn_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
+            int y = std::get<0>(pos);
+            int x = std::get<1>(pos);
+            int direction = 1;
+            if(!lowercase)
             {
-                std::vector<std::tuple<int, int>> moves;
-                bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
-                int y = std::get<0>(pos);
-                int x = std::get<1>(pos);
-                int direction = 1;
-                if(!lowercase)
-                {
-                    direction = -1;
-                }
-
-                if(board[y+direction][x] == '.')
-                {
-                    moves.push_back(std::tuple<int, int>(y+direction, x));
-                    if(board[y+direction*2][x] == '.')
-                    {
-                        if(!lowercase && y == 1 || lowercase && y == 7)
-                        {
-                            moves.push_back(std::tuple<int, int>(y+direction*2, x));
-                        }
-                    }
-                }
-
-                if(x != 0 && board[y+direction][x-1] != '.' && islower(board[y+direction][x-1]) != lowercase)
-                {
-                    moves.push_back(std::tuple<int, int>(y+direction, x-1));
-                }
-
-                if(x != 7 && board[y+direction][x+1] != '.' && islower(board[y+direction][x+1]) != lowercase)
-                {
-                    moves.push_back(std::tuple<int, int>(y+direction, x+1));
-                }
-                
-                return moves;
+                direction = -1;
             }
 
-            std::vector<std::tuple<int, int>> rook_move(std::tuple<int, int> pos)
+            if(board[y+direction][x] == '.')
             {
-                std::vector<std::tuple<int, int>> moves;
-                bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
-                int y = std::get<0>(pos);
-                int x = std::get<1>(pos);
-                // Directions to check
-                bool down = true;
-                bool up = true;
-                bool right = true;
-                bool left = true;
-                bool cnt = 1;
-
-                while(down && up && right && left)
+                moves.push_back(std::tuple<int, int>(y+direction, x));
+                if(board[y+direction*2][x] == '.')
                 {
-                    if(down)
+                    if(!lowercase && y == 1 || lowercase && y == 7)
                     {
-                        try
-                        {
-                            if(board[y+1][x] == '.')
-                            {
-                                moves.push_back(std::tuple<int, int>(y+1, x));
-                            }
-
-                            if(islower(board[y+1][x]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y+1, x));
-                                throw;
-                            }
-                        }
-
-                        catch(...)
-                        {
-                            down = false;
-                        }
+                        moves.push_back(std::tuple<int, int>(y+direction*2, x));
                     }
-
-                    if(up)
-                    {
-                        try
-                        {
-                            if(board[y-1][x] == '.')
-                            {
-                                moves.push_back(std::tuple<int, int>(y-1, x));
-                            }
-
-                            if(islower(board[y-1][x]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y-1, x));
-                                throw;
-                            }
-                        }
-                        
-                        catch(...)
-                        {
-                            up = false;
-                        }
-                    }
-
-                    if(right)
-                    {
-                        try
-                        {
-                            if(board[y][x+1] == '.')
-                            {
-                                moves.push_back(std::tuple<int, int>(y, x+1));
-                            }
-
-                            if(islower(board[y][x+1]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y, x+1));
-                                throw;
-                            }
-                        }
-                        
-                        catch(...)
-                        {
-                            right = false;
-                        }
-                    }
-
-                    if(left)
-                    {
-                        try
-                        {
-                            if(board[y][x-1] == '.')
-                            {
-                                moves.push_back(std::tuple<int, int>(y, x-1));
-                            }
-
-                            if(islower(board[y][x-1]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y, x-1));
-                                throw;
-                            }
-                        }
-                        
-                        catch(...)
-                        {
-                            left = false;
-                        }
-                    }
-
-                    cnt+=1;
                 }
-
-                return moves;
             }
 
-            std::vector<std::tuple<int, int>> knight_move(std::tuple<int, int> pos)
+            if(x != 0 && board[y+direction][x-1] != '.' && islower(board[y+direction][x-1]) != lowercase)
             {
-                std::vector<std::tuple<int, int>> moves;
-                bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
-                int y = std::get<0>(pos);
-                int x = std::get<1>(pos);
-
-                try
-                {
-                    if(islower(board[y+1][x+2]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+1, x+2));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y+1][x-2]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+1, x-2));
-                    }
-                }
-                catch(...){}
-                
-                try
-                {
-                    if(islower(board[y-1][x+2]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-1, x+2));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y-1][x-2]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-1, x-2));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y+2][x+1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+2, x+1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y+2][x-1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+2, x-1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y-2][x+1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-2, x+1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y-2][x-1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-2, x-1));
-                    }
-                }
-                catch(...){}
-
-                return moves;
+                moves.push_back(std::tuple<int, int>(y+direction, x-1));
             }
 
-            std::vector<std::tuple<int, int>> bishop_move(std::tuple<int, int> pos)
+            if(x != 7 && board[y+direction][x+1] != '.' && islower(board[y+direction][x+1]) != lowercase)
             {
-                std::vector<std::tuple<int, int>> moves;
-                bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
-                int y = std::get<0>(pos);
-                int x = std::get<1>(pos);
-                bool upRight = true;
-                bool upLeft = true;
-                bool downRight = true;
-                bool downLeft = true;
-                int cnt = 1;
+                moves.push_back(std::tuple<int, int>(y+direction, x+1));
+            }
+            
+            return moves;
+        }
 
-                while(upRight && upLeft && downRight && downLeft)
+        std::vector<std::tuple<int, int>> rook_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
+            int y = std::get<0>(pos);
+            int x = std::get<1>(pos);
+            // Directions to check
+            bool down = true;
+            bool up = true;
+            bool right = true;
+            bool left = true;
+            bool cnt = 1;
+
+            while(down && up && right && left)
+            {
+                if(down)
                 {
-                    if(upRight)
+                    try
                     {
-                        try
+                        if(board[y+1][x] == '.')
                         {
-                            if(islower(board[y-cnt][x+cnt]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y-cnt, x+cnt));
-                            }
+                            moves.push_back(std::tuple<int, int>(y+1, x));
                         }
-                        catch(...)
+
+                        if(islower(board[y+1][x]) != lowercase)
                         {
-                            upRight = false;
+                            moves.push_back(std::tuple<int, int>(y+1, x));
+                            throw;
                         }
                     }
 
-                    if(upLeft)
+                    catch(...)
                     {
-                        try
-                        {
-                            if(islower(board[y-cnt][x-cnt]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y-cnt, x-cnt));
-                            }
-                        }
-                        catch(...)
-                        {
-                            upLeft = false;
-                        }
+                        down = false;
                     }
-
-                    if(downRight)
-                    {
-                        try
-                        {
-                            if(islower(board[y+cnt][x+cnt]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y+cnt, x+cnt));
-                            }
-                        }
-                        catch(...)
-                        {
-                            downRight = false;
-                        }
-                    }
-
-                    if(downLeft)
-                    {
-                        try
-                        {
-                            if(islower(board[y+cnt][x-cnt]) != lowercase)
-                            {
-                                moves.push_back(std::tuple<int, int>(y+cnt, x-cnt));
-                            }
-                        }
-                        catch(...)
-                        {
-                            downLeft = false;
-                        }
-                    }
-
-                    cnt+=1;
                 }
 
-                return moves;
+                if(up)
+                {
+                    try
+                    {
+                        if(board[y-1][x] == '.')
+                        {
+                            moves.push_back(std::tuple<int, int>(y-1, x));
+                        }
+
+                        if(islower(board[y-1][x]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y-1, x));
+                            throw;
+                        }
+                    }
+                    
+                    catch(...)
+                    {
+                        up = false;
+                    }
+                }
+
+                if(right)
+                {
+                    try
+                    {
+                        if(board[y][x+1] == '.')
+                        {
+                            moves.push_back(std::tuple<int, int>(y, x+1));
+                        }
+
+                        if(islower(board[y][x+1]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y, x+1));
+                            throw;
+                        }
+                    }
+                    
+                    catch(...)
+                    {
+                        right = false;
+                    }
+                }
+
+                if(left)
+                {
+                    try
+                    {
+                        if(board[y][x-1] == '.')
+                        {
+                            moves.push_back(std::tuple<int, int>(y, x-1));
+                        }
+
+                        if(islower(board[y][x-1]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y, x-1));
+                            throw;
+                        }
+                    }
+                    
+                    catch(...)
+                    {
+                        left = false;
+                    }
+                }
+
+                cnt+=1;
             }
 
-            std::vector<std::tuple<int, int>> king_move(std::tuple<int, int> pos)
+            return moves;
+        }
+
+        std::vector<std::tuple<int, int>> knight_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
+            int y = std::get<0>(pos);
+            int x = std::get<1>(pos);
+
+            try
             {
-                std::vector<std::tuple<int, int>> moves;
-                bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
-                int y = std::get<0>(pos);
-                int x = std::get<1>(pos);
-
-                try
+                if(islower(board[y+1][x+2]) != lowercase)
                 {
-                    if(islower(board[y+1][x]) != lowercase)
+                    moves.push_back(std::tuple<int, int>(y+1, x+2));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y+1][x-2]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+1, x-2));
+                }
+            }
+            catch(...){}
+            
+            try
+            {
+                if(islower(board[y-1][x+2]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-1, x+2));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-1][x-2]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-1, x-2));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y+2][x+1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+2, x+1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y+2][x-1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+2, x-1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-2][x+1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-2, x+1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-2][x-1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-2, x-1));
+                }
+            }
+            catch(...){}
+
+            return moves;
+        }
+
+        std::vector<std::tuple<int, int>> bishop_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
+            int y = std::get<0>(pos);
+            int x = std::get<1>(pos);
+            bool upRight = true;
+            bool upLeft = true;
+            bool downRight = true;
+            bool downLeft = true;
+            int cnt = 1;
+
+            while(upRight && upLeft && downRight && downLeft)
+            {
+                if(upRight)
+                {
+                    try
                     {
-                        moves.push_back(std::tuple<int, int>(y+1, x));
+                        if(islower(board[y-cnt][x+cnt]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y-cnt, x+cnt));
+                        }
+                    }
+                    catch(...)
+                    {
+                        upRight = false;
                     }
                 }
-                catch(...){}
 
-                try
+                if(upLeft)
                 {
-                    if(islower(board[y-1][x]) != lowercase)
+                    try
                     {
-                        moves.push_back(std::tuple<int, int>(y-1, x));
+                        if(islower(board[y-cnt][x-cnt]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y-cnt, x-cnt));
+                        }
+                    }
+                    catch(...)
+                    {
+                        upLeft = false;
                     }
                 }
-                catch(...){}
 
-                try
+                if(downRight)
                 {
-                    if(islower(board[y][x+1]) != lowercase)
+                    try
                     {
-                        moves.push_back(std::tuple<int, int>(y, x+1));
+                        if(islower(board[y+cnt][x+cnt]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y+cnt, x+cnt));
+                        }
+                    }
+                    catch(...)
+                    {
+                        downRight = false;
                     }
                 }
-                catch(...){}
 
-                try
+                if(downLeft)
                 {
-                    if(islower(board[y][x-1]) != lowercase)
+                    try
                     {
-                        moves.push_back(std::tuple<int, int>(y, x-1));
+                        if(islower(board[y+cnt][x-cnt]) != lowercase)
+                        {
+                            moves.push_back(std::tuple<int, int>(y+cnt, x-cnt));
+                        }
+                    }
+                    catch(...)
+                    {
+                        downLeft = false;
                     }
                 }
-                catch(...){}
 
-                try
-                {
-                    if(islower(board[y+1][x+1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+1, x+1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y+1][x-1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y+1, x-1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y-1][x+1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-1, x+1));
-                    }
-                }
-                catch(...){}
-
-                try
-                {
-                    if(islower(board[y-1][x-1]) != lowercase)
-                    {
-                        moves.push_back(std::tuple<int, int>(y-1, x-1));
-                    }
-                }
-                catch(...){}
-
-                return moves;
+                cnt+=1;
             }
 
-            std::vector<std::tuple<int, int>> queen_move(std::tuple<int, int> pos)
-            {
-                std::vector<std::tuple<int, int>> moves;
-                // Check for horizontal and vertical moves (rook).
-                for(auto x: rook_move(pos))
-                {
-                    moves.push_back(x);
-                }
-                // Check for diagonal moves (bishop).
-                for(auto x: bishop_move(pos))
-                {
-                    moves.push_back(x);
-                }
+            return moves;
+        }
 
-                return moves;
+        std::vector<std::tuple<int, int>> king_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
+            int y = std::get<0>(pos);
+            int x = std::get<1>(pos);
+
+            try
+            {
+                if(islower(board[y+1][x]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+1, x));
+                }
             }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-1][x]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-1, x));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y][x+1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y, x+1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y][x-1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y, x-1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y+1][x+1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+1, x+1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y+1][x-1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y+1, x-1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-1][x+1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-1, x+1));
+                }
+            }
+            catch(...){}
+
+            try
+            {
+                if(islower(board[y-1][x-1]) != lowercase)
+                {
+                    moves.push_back(std::tuple<int, int>(y-1, x-1));
+                }
+            }
+            catch(...){}
+
+            return moves;
+        }
+
+        std::vector<std::tuple<int, int>> queen_move(std::tuple<int, int> pos)
+        {
+            std::vector<std::tuple<int, int>> moves;
+            // Check for horizontal and vertical moves (rook).
+            for(auto x: rook_move(pos))
+            {
+                moves.push_back(x);
+            }
+            // Check for diagonal moves (bishop).
+            for(auto x: bishop_move(pos))
+            {
+                moves.push_back(x);
+            }
+
+            return moves;
+        }
+
+        void printBoard()
+        {
+            for(int i=0;i<8;i++)
+            {
+                for(int j=0;j<8;j++)
+                {
+                    printf("%c ", board[i][j]);
+                }
+                printf("\n");
+            }
+        }
 };
