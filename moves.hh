@@ -5,21 +5,28 @@
 #include <map>
 #include <iostream>
 #include <cstdlib>
+#include "board.hh"
+
+struct Positions
+{
+    int y;
+    int x;
+};
+
+Positions get_pos(int y, int x)
+{
+    Positions pos = {x, y};
+
+    return pos; 
+}
 
 class Moves
 {
-    public:
-        std::vector<std::vector<char>> board;
-
-        Moves(std::vector<std::vector<char>> pointer)
-        {
-            board = pointer;
-        }
-
+    private:
         bool is_out_of_bounds(int y, int x)
         {
             bool out_of_bounds = false;
-            if(y > 7 || y < 0 || x > 7 || x < 0)
+            if(y > 7 && y < 0 && x > 7 && x < 0)
             {
                 out_of_bounds = true;
             }
@@ -67,6 +74,7 @@ class Moves
         std::vector<std::tuple<int, int>> rook_move(std::tuple<int, int> pos)
         {
             std::vector<std::tuple<int, int>> moves;
+            
             bool lowercase = islower(board[std::get<0>(pos)][std::get<1>(pos)]);
             int y = std::get<0>(pos);
             int x = std::get<1>(pos);
@@ -434,15 +442,29 @@ class Moves
             return moves;
         }
 
-        void printBoard()
+
+    public:
+
+        std::vector<std::tuple<int, int>> get_moves(int y, int x)
         {
-            for(int i=0;i<8;i++)
+            std::vector<std::tuple<int, int>> moves;
+            switch(tolower(board[y][x]))
             {
-                for(int j=0;j<8;j++)
-                {
-                    printf("%c ", board[i][j]);
-                }
-                printf("\n");
+                case 'p':
+                    moves = pawn_move(std::tuple<int, int>(y, x));
+                case 'r':
+                    moves = rook_move(std::tuple<int, int>(y, x));
+                case 'n':
+                    moves = bishop_move(std::tuple<int, int>(y, x));
+                case 'b':
+                    moves = bishop_move(std::tuple<int, int>(y, x));
+                case 'q':
+                    moves = queen_move(std::tuple<int, int>(y, x));
+                case 'k':
+                    moves = king_move(std::tuple<int, int>(y, x));
+                
             }
+
+            return moves;
         }
 };

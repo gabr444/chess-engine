@@ -1,5 +1,4 @@
 #include <iostream>
-#include "board.hh"
 #include "moves.hh"
 #include <array>
 
@@ -12,16 +11,15 @@ std::string checkWin()
 
 int main()
 {
-    Board board;
-    Moves moves(board.board);
-    board.printBoard();
-    printf("\n");
-    moves.printBoard();
-    printf("\n");
-    board.board[0][0] = 't';
-    board.printBoard();
-    printf("\n");
-    moves.printBoard();
+    Board chessBoard;
+    Moves moves;
+    board[1][0] = '.';
+    chessBoard.printBoard();
+    std::vector<std::tuple<int, int>> get_moves = moves.get_moves(0, 0);
+    for(int i=0;i<get_moves.size();i++)
+    {
+        printf("%d %d\n", std::get<0>(get_moves[i]), std::get<1>(get_moves[i]));
+    }
 
     return 0;
 }
