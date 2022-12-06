@@ -15,7 +15,7 @@ struct Positions
 
 Positions get_pos(int y, int x)
 {
-    Positions pos = {x, y};
+    Positions pos = {y, x};
 
     return pos; 
 }
