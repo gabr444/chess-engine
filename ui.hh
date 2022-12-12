@@ -14,8 +14,6 @@
 
 #define IMG_FOLDER "media/"
 
-
-
 // Map with image name for each piece!
 std::map<char, std::string> imageMap = 
 {
