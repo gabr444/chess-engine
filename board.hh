@@ -1,10 +1,19 @@
 #include <string>
-#include <vector>
-
-#define H 8
-#define W 8
 
 char board[8][8];
+
+struct Position
+{
+    int y;
+    int x;
+};
+
+Position get_pos(int y, int x)
+{
+    Position pos = {y, x};
+
+    return pos; 
+}
 
 class Board
 {
@@ -93,5 +102,27 @@ class Board
                 }
                 printf("\n");
             }
+        }
+
+        bool checkWin()
+        {
+            return false;
+        }
+
+        std::vector<Position> getPositions(auto lowercase)
+        {
+            std::vector<Position> positions;
+            for(int i=0;i<8;i++)
+            {
+                for(int j=0;j<8;j++)
+                {
+                    if(islower(board[i][j]) == lowercase && board[i][j] != '.')
+                    {
+                        positions.push_back(get_pos(i, j));
+                    }
+                }
+            }
+
+            return positions;
         }
 };
