@@ -1,6 +1,5 @@
 #include <string>
-
-char board[8][8];
+#include <vector>
 
 struct Position
 {
@@ -18,11 +17,17 @@ Position get_pos(int y, int x)
 class Board
 {
     public:
+        char board[8][8];
         std::string fen; 
-
         Board()
         {
-            parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+            // Parse standard fen to board.
+            //k5qr/8/2n4B/p1P5/P7/8/r7/7K
+            //rnbqkbnr/pppppppp/8/8/8/8/P3PPPP/RNBQKBNR
+            //6k1/5ppp/ppr2q2/8/P5P1/1QNP3P/1P1BP3/3RKBNR 
+            //4k3/3ppp2/8/8/8/8/8/R3Q2R 
+            // r1b1k2r/1pppNppp/p2bp3/q3N3/P1Pn2P1/4P3/1P1P1P1P/R1BQKB1R
+            parse_FEN("1k6/2p2p2/8/6P1/4P3/8/4PP2/R3K2R");
         }
 
         std::string get_FEN()
@@ -48,6 +53,7 @@ class Board
                         fen+=board[i][j];
                     }
                 }
+
                 if(empty_cnt > 0)
                 {
                     fen+=std::to_string(empty_cnt);
@@ -56,6 +62,7 @@ class Board
                 fen+='/';
             }
 
+            // Remove last '/' from fen.
             fen.pop_back();
 
             return fen;
@@ -102,11 +109,6 @@ class Board
                 }
                 printf("\n");
             }
-        }
-
-        bool checkWin()
-        {
-            return false;
         }
 
         std::vector<Position> getPositions(auto lowercase)
