@@ -6,13 +6,6 @@
 #include <vector>
 #include <time.h>
 
-/* 
-Gymnasiearbete frågeställningar
-1 - fråga - svar
-2 - fråga - svar
-3 - fråga - svar
-*/ 
-
 std::map<int, char> sidePanelMap = 
 {
     {0, 'r' },
