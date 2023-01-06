@@ -8,7 +8,7 @@ std::vector<std::vector<int>> pawnScores   {{0,  0,  0,  0,  0,  0,  0,  0},
                                             {10, 10, 20, 30, 30, 20, 10, 10},
                                             {5,  5, 10, 25, 25, 10,  5,  5},
                                             {0,  0,  0, 20, 20,  0,  0,  0},
-                                            {5, -5,-10,  0,  0,-10, -5,  5},
+                                            {5, -5,-10,  0,  0, -10, -5,  5},
                                             {5, 10, 10,-20,-20, 10, 10,  5},
                                             {0,  0,  0,  0,  0,  0,  0,  0}};
 
@@ -60,12 +60,12 @@ std::vector<std::vector<int>> kingScores {{-30,-40,-40,-50,-50,-40,-40,-30},
 // Map with score for each piece!
 std::map<char, int> scores = 
 {
-    { 'p', 20 },
-    { 'r', 100 },
-    { 'n', 60 },
-    { 'b', 60 },
-    { 'q', 180 },
-    { 'k', 1800 }
+    { 'p', 100 },
+    { 'r', 900 },
+    { 'n', 300 },
+    { 'b', 300 },
+    { 'q', 900 },
+    { 'k', 5000 }
 };
 
 std::map<char, std::vector<std::vector<int>>> positionScores = 
@@ -93,12 +93,13 @@ class Engine
             }
         } 
 
+        int positionsChecked = 0;
+
         std::vector<Position> bestMove(Moves mve, int depth)
         {
             char boardCpy[8][8];
-            Position bestEndPos;
-            Position bestStartPos;
-            Position bestPromotionPiece;
+            Position bestEndPos = get_pos(-1, -1);
+            Position bestStartPos = get_pos(-1, -1);
             int alpha = -MAX_INT;
             int beta = MAX_INT;
             int bestScore = -MAX_INT;
@@ -109,54 +110,38 @@ class Engine
                     boardCpy[i][j] = *board[i][j];
                 }
             }
-            Moves get_moves(boardCpy, mve.documentedMoves);
+            Moves get_moves(boardCpy, mve.documentedMoves, mve.latestMove);
 
             for(Position pos: get_moves.getPositions(true))
             {
-                for(Position move: get_moves.get_moves(pos.y, pos.x))
+                for(Position move: get_moves.filterMoves(pos, get_moves.get_moves(pos.y, pos.x)))
                 {
+                    positionsChecked+=1;
                     get_moves.move_piece(pos, move);
                     if(get_moves.pawnPromotion(move))
                     {
-                        char promotionPieces[2] = {'q', 'r'};
-                        for(int i=0;i<2;i++)
-                        {
-                            get_moves.promotePawn(move, promotionPieces[i]);
-                            int score = miniMax(get_moves, false, depth-1, alpha, beta);
-                            if(score > bestScore)
-                            {
-                                bestScore = score;
-                                bestStartPos = pos;
-                                bestEndPos = move;
-                                bestPromotionPiece.y = i;
-                            }
-                            if(score > alpha)
-                            {
-                                alpha = score;
-                            }
-                            get_moves.undo_move();
-                        }
+                        get_moves.promotePawn(move, 'q');
                     }
-                    else
+                    int score = miniMax(get_moves, false, depth-1, alpha, beta);
+                    if(score > bestScore)
                     {
-                        int score = miniMax(get_moves, false, depth-1, alpha, beta);
-                        if(score > bestScore)
-                        {
-                            bestScore = score;
-                            bestStartPos = pos;
-                            bestEndPos = move;
-                        }
-                        if(score > alpha)
-                        {
-                            alpha = score;
-                        }
-
-                        get_moves.undo_move();
+                        bestScore = score;
+                        bestStartPos = pos;
+                        bestEndPos = move;
                     }
+                    if(score > alpha)
+                    {
+                        alpha = score;
+                    }
+
+                    get_moves.undo_move();
                 }
             }
+
+            std::cout << positionsChecked << std::endl;
+            positionsChecked = 0;
             
-            std::vector<Position> bestMoves {bestStartPos, bestEndPos, bestPromotionPiece};
+            std::vector<Position> bestMoves {bestStartPos, bestEndPos};
 
             return bestMoves;
         }
@@ -172,7 +157,9 @@ class Engine
                     boardCpy[i][j] = *mve.board[i][j];
                 }
             }
-            Moves testMoves(boardCpy);
+
+            Moves testMoves(boardCpy, mve.documentedMoves, mve.latestMove);
+
             if(testMoves.checkMate(true))
             {
                 return MAX_INT;
@@ -182,6 +169,12 @@ class Engine
             {
                 return -MAX_INT;
             }
+
+            if(testMoves.staleMate(maximizing))
+            {
+                return 0;
+            }
+
             if(depth == 0)
             {
                 return evaluation(boardCpy);
@@ -199,95 +192,47 @@ class Engine
             {
                 for(Position move: testMoves.filterMoves(pos, testMoves.get_moves(pos.y, pos.x)))
                 {
+                    positionsChecked+=1;
                     testMoves.move_piece(pos, move);
                     if(testMoves.pawnPromotion(move))
                     {
-                        char promotionPieces[2] = {'q', 'n'};
-                        if(!maximizing)
+                        testMoves.promotePawn(move, 'q');
+                    }
+                    int score = miniMax(testMoves, !maximizing, depth-1, alpha, beta);
+                    testMoves.undo_move();
+                    if(maximizing)
+                    {
+                        if(score > bestScore)
                         {
-                            promotionPieces[0] = 'Q';
-                            promotionPieces[1] = 'N';
-                        }
-                        for(int i=0;i<2;i++)
-                        {
-                            testMoves.promotePawn(move, promotionPieces[i]);
-                            int score = miniMax(testMoves, false, depth-1, alpha, beta);
-                            testMoves.undo_move();
-                            if(maximizing)
-                            {
-                                if(score > bestScore)
-                                {
-                                    bestScore = score;
-                                }   
+                            bestScore = score;
+                        }   
 
-                                if(score > alpha)
-                                {
-                                    alpha = score;
-                                }
-                            }
-                            else
-                            {
-                                if(score < bestScore)
-                                {
-                                    bestScore = score;
-                                }
-                                if(beta > score)
-                                {
-                                    beta = score;
-                                }
-                            }
-
-                            if(beta <= alpha)
-                            {
-                                prune = true;
-                                break;
-                            }
-                        }
-                        if(prune)
+                        if(score > alpha)
                         {
-                            break;
+                            alpha = score;
+                        }
+                    }
+                    else
+                    {
+                        if(score < bestScore)
+                        {
+                            bestScore = score;
+                        }
+                        if(beta > score)
+                        {
+                            beta = score;
                         }
                     }
 
-                    else
+                    if(beta <= alpha)
                     {
-                        int score = miniMax(testMoves, !maximizing, depth-1, alpha, beta);
-                        testMoves.undo_move();
-                        if(maximizing)
-                        {
-                            if(score > bestScore)
-                            {
-                                bestScore = score;
-                            }   
-
-                            if(score > alpha)
-                            {
-                                alpha = score;
-                            }
-                        }
-                        else
-                        {
-                            if(score < bestScore)
-                            {
-                                bestScore = score;
-                            }
-                            if(beta > score)
-                            {
-                                beta = score;
-                            }
-                        }
-
-                        if(beta <= alpha)
-                        {
-                            prune = true;
-                            break;
-                        }
+                        prune = true;
+                        break;
                     }
                 }
 
                 if(prune)
                 {
-                    prune = false;
                     break;
                 }
             }
@@ -330,14 +275,14 @@ class Engine
                         int mobilityScore = mve.get_moves(i, j).size();
                         if(islower(piece))
                         {
-                            int positionScore = positionScores.at(piece)[7-i][j]/5;
-                            blackScore += scores.at(piece)+mobilityScore;
+                            int positionScore = positionScores.at(piece)[7-i][j];
+                            blackScore += scores.at(piece)+mobilityScore+positionScore;
                         }
                         
                         else
                         {
-                            int positionScore = positionScores.at(piece)[i][j]/5;
-                            whiteScore+=scores.at(piece)+mobilityScore;
+                            int positionScore = positionScores.at(piece)[i][j];
+                            whiteScore+=scores.at(piece)+mobilityScore+positionScore;
                         }
                     }
                 }

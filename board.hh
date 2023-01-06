@@ -27,7 +27,8 @@ class Board
             //6k1/5ppp/ppr2q2/8/P5P1/1QNP3P/1P1BP3/3RKBNR 
             //4k3/3ppp2/8/8/8/8/8/R3Q2R 
             // r1b1k2r/1pppNppp/p2bp3/q3N3/P1Pn2P1/4P3/1P1P1P1P/R1BQKB1R
-            parse_FEN("1k6/2p2p2/8/6P1/4P3/8/4PP2/R3K2R");
+            // k5qr/8/2n4B/p1P5/P7/8/r7/7K
+            parse_FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
         }
 
         std::string get_FEN()
@@ -97,34 +98,5 @@ class Board
                     cnt+=1;
                 }
             }
-        }
-
-        void printBoard()
-        {
-            for(int i=0;i<8;i++)
-            {
-                for(int j=0;j<8;j++)
-                {
-                    printf("%c ", board[i][j]);
-                }
-                printf("\n");
-            }
-        }
-
-        std::vector<Position> getPositions(auto lowercase)
-        {
-            std::vector<Position> positions;
-            for(int i=0;i<8;i++)
-            {
-                for(int j=0;j<8;j++)
-                {
-                    if(islower(board[i][j]) == lowercase && board[i][j] != '.')
-                    {
-                        positions.push_back(get_pos(i, j));
-                    }
-                }
-            }
-
-            return positions;
         }
 };

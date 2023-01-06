@@ -14,7 +14,7 @@ class Moves
         char previousBoard[8][8];
         Position latestMove; 
 
-        Moves(char arr[8][8], const std::vector<Position> moves = std::vector<Position>())
+        Moves(char arr[8][8], const std::vector<Position> moves = std::vector<Position>(), Position lastMove = get_pos(-1, -1))
         {
             for(int i=0;i<8;i++)
             {
@@ -27,6 +27,11 @@ class Moves
             if(moves.size() > 0)
             {
                 documentedMoves = moves;
+            }
+
+            if(lastMove.y != -1)
+            {
+                latestMove = lastMove;
             }
         } 
         
@@ -270,7 +275,7 @@ class Moves
             {
                 for(int x: {0, 7})
                 {
-                    if(tolower(*board[pos.y][x]) == 'r' && !movedPosition(get_pos(pos.y, x)))
+                    if(tolower(*board[pos.y][x]) == 'r' && !movedPosition(get_pos(pos.y, x)) && lowercase == islower(*board[pos.y][x]))
                     {
                         int gap = abs(4-x);
                         int direction = 1;
@@ -362,7 +367,7 @@ class Moves
             }
 
             // Check if current move is castling.
-            if(tolower(*board[start.y][start.x]) == 'k' && tolower(*board[end.y][end.x]) == 'r')
+            if(tolower(*board[start.y][start.x]) == 'k' && tolower(*board[end.y][end.x]) == 'r' && islower(*board[start.y][start.x]) == islower(*board[end.y][end.x]))
             {
                 // Add both start and end position to documented moves.
                 if(documentMove)
@@ -384,10 +389,9 @@ class Moves
                 {
                     castle(rook, get_pos(rook.y, rook.x+3), king, get_pos(king.y, king.x-2));
                 }
-                
             }
 
-            if(tolower(*board[start.y][start.x]) == 'p' && start.x != end.x && *board[end.y][end.x] == '.')
+            else if(tolower(*board[start.y][start.x]) == 'p' && start.x != end.x && *board[end.y][end.x] == '.')
             {
                 *board[end.y][end.x] = *board[start.y][start.x];
                 *board[start.y][start.x] = '.';
@@ -404,7 +408,10 @@ class Moves
                 {
                     documentedMoves.push_back(start);
                 }
-                latestMove = end;
+                if(documentMove)
+                {
+                    latestMove = end;
+                }
             }
         }
 
@@ -519,6 +526,22 @@ class Moves
             }
 
             return isCheckMate;
+        }
+
+        bool staleMate(bool lowercase)
+        {
+            bool isStaleMate = true;
+            // Check possible blocking or capturing moves to avoid check.
+            for(Position pos: getPositions(lowercase))
+            {
+                if(filterMoves(pos, get_moves(pos.y, pos.x)).size() > 0)
+                {
+                    isStaleMate = false;
+                    break;
+                }
+            }
+
+            return isStaleMate;
         }
 
         std::vector<Position> getPositions(bool lowercase)
