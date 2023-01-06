@@ -273,7 +273,7 @@ class Engine
                     {
                         char piece = tolower(boardCpy[i][j]);
                         int mobilityScore = mve.get_moves(i, j).size();
-                        if(islower(piece))
+                        if(islower(boardCpy[i][j]))
                         {
                             int positionScore = positionScores.at(piece)[7-i][j];
                             blackScore += scores.at(piece)+mobilityScore+positionScore;
