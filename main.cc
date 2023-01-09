@@ -9,15 +9,16 @@
 /* 
 Gymnasiearbete frågeställningar
 1 - fråga - svar
-2 - fråga - 219.947000 sekunder 
-. . . . . . . . 
-. . P . . . . .
-. . . . . . P .
-. . R . . . P .
-. . . . P . . .
-. . . . . k . .
-. . . . q . . .
-. . . . K . B .
+2 - fråga - 74.095000 sekunder - 61.430000 sekunder
+
+r . b . . r k . 
+p p p . . p . p
+. . . . . . . .
+. P . N . . . P
+P b . p . . P .
+. P . . . . . .
+. B . q P . . .
+R . . K . B . R
 
 3 - fråga - svar
 */ 
@@ -32,9 +33,9 @@ std::map<int, char> sidePanelMap =
 
 char promotionPieces[2] = {'q', 'n'};
 
-bool valueInVector(std::vector<Position> vec, Position value)
+bool valueInVector(std::vector<Square> vec, Square value)
 {
-    for(Position x: vec)
+    for(Square x: vec)
     {
         if(x.y == value.y && x.x == value.x)
         {
@@ -58,7 +59,7 @@ int main()
     double playerTime = 0;
 
     // Possible screen positions when choosing piece for pawn promotion.
-    std::vector<Position> sidePanelPositions {get_pos(0, 8), get_pos(1, 8), get_pos(2, 8), get_pos(3, 8)};
+    std::vector<Square> sidePanelPositions {get_pos(0, 8), get_pos(1, 8), get_pos(2, 8), get_pos(3, 8)};
     while(!moves.checkMate(true) && !moves.checkMate(false))
     {
         // Player choice.
@@ -72,10 +73,10 @@ int main()
             }
             start = clock();
     
-            Position pieceToMove = get_pos(-1, -1);
+            Square pieceToMove = get_pos(-1, -1);
             while(1)
             {
-                std::vector<Position> whitePositions = moves.getPositions(islower('R'));
+                std::vector<Square> whitePositions = moves.getPositions(islower('R'));
 
                 // Get chosen piece to move.
                 if(pieceToMove.y == -1)
@@ -83,19 +84,19 @@ int main()
                     pieceToMove = interface.mouseClick(whitePositions);
                 }
 
-                std::vector<Position> possible_moves = moves.filterMoves(pieceToMove, moves.get_moves(pieceToMove.y, pieceToMove.x));
+                std::vector<Square> possible_moves = moves.filterMoves(pieceToMove, moves.get_moves(pieceToMove.y, pieceToMove.x));
                 std::cout << possible_moves.size() << std::endl;
 
                 if(possible_moves.size() > 0)
                 {
                     // Highlight possible moves.
-                    for(Position x: possible_moves)
+                    for(Square x: possible_moves)
                     {
                         interface.highlightPosition(x.y, x.x);
                     }
                     // Get position of choice.
                     whitePositions.insert(whitePositions.end(), possible_moves.begin(), possible_moves.end());
-                    Position mouse_pos = interface.mouseClick(whitePositions);
+                    Square mouse_pos = interface.mouseClick(whitePositions);
                     // If player clicks on movable square then move the piece.
                     if(valueInVector(possible_moves, mouse_pos))
                     {
@@ -106,7 +107,7 @@ int main()
                         if(moves.pawnPromotion(mouse_pos))
                         {
                             interface.updateScreen();
-                            Position promoted_piece = interface.mouseClick(sidePanelPositions);
+                            Square promoted_piece = interface.mouseClick(sidePanelPositions);
                             moves.promotePawn(mouse_pos, sidePanelMap.at(promoted_piece.y));
                         }
                         end = clock();
@@ -138,7 +139,7 @@ int main()
             }
             
             start = clock();
-            std::vector<Position> best = eg.bestMove(moves, 4);
+            std::vector<Square> best = eg.bestMove(moves, 4);
             moves.move_piece(best[0], best[1]);
             // Check for eventual pawn promotion.
             if(moves.pawnPromotion(best[1]))
