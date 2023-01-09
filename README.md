@@ -10,5 +10,5 @@ g++ main.cc ui.cc board.cc moves.cc engine.cc -lSDL2 -lSDL2_image
 ```
 ./a.exe
 ``` 
-or simply launch exe file
+or simply launch executable file
 
