@@ -11,5 +11,3 @@ When compiled, run the following
 ```
 ./a.exe
 ``` 
-or simply launch executable file
-
