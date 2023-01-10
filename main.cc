@@ -8,8 +8,8 @@
 
 /* 
 Gymnasiearbete frågeställningar
-1 - fråga - svar
-2 - fråga - 74.095000 sekunder - 61.430000 sekunder
+1 - fråga - svar - 0.754000 sekunder (4) - 13.482000 sekunder (5) - 1.363000 (4) 11.18900(5) 
+2 - fråga - 74.095000 sekunder - 61.430000 sekunder - 10.215000 sekunder
 
 r . b . . r k . 
 p p p . . p . p
@@ -20,7 +20,7 @@ P b . p . . P .
 . B . q P . . .
 R . . K . B . R
 
-3 - fråga - svar
+3 - fråga - 15000 kombinationer/sekunden
 */ 
 
 std::map<int, char> sidePanelMap = 
@@ -30,8 +30,6 @@ std::map<int, char> sidePanelMap =
     {2, 'b' },
     {3, 'q' }
 };
-
-char promotionPieces[2] = {'q', 'n'};
 
 bool valueInVector(std::vector<Square> vec, Square value)
 {
@@ -62,6 +60,7 @@ int main()
     std::vector<Square> sidePanelPositions {get_pos(0, 8), get_pos(1, 8), get_pos(2, 8), get_pos(3, 8)};
     while(!moves.checkMate(true) && !moves.checkMate(false))
     {
+        printf("Runda %d:\n", round+1);
         // Player choice.
         if(round % 2 == 0)
         {
@@ -85,7 +84,6 @@ int main()
                 }
 
                 std::vector<Square> possible_moves = moves.filterMoves(pieceToMove, moves.get_moves(pieceToMove.y, pieceToMove.x));
-                std::cout << possible_moves.size() << std::endl;
 
                 if(possible_moves.size() > 0)
                 {
@@ -219,8 +217,10 @@ int main()
         }*/
         
         round+=1;
-        moves.printBoard();
     }
+
+    moves.printBoard();
+    SDL_Delay(2000);
     
     if(moves.checkMate(true))
     {
