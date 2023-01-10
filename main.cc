@@ -147,74 +147,10 @@ int main()
             end = clock();
             engineTime+=((double)(end-start))/CLOCKS_PER_SEC;
             printf("Total tid för bot: %f\n", engineTime);
-            
-            /*
-            start = clock();
-    
-            Position pieceToMove = get_pos(-1, -1);
-            while(1)
-            {
-                std::vector<Position> whitePositions = moves.getPositions(islower('r'));
-
-                // Get chosen piece to move.
-                if(pieceToMove.y == -1)
-                {
-                    pieceToMove = interface.mouseClick(whitePositions);
-                }
-
-                std::vector<Position> possible_moves = moves.filterMoves(pieceToMove, moves.get_moves(pieceToMove.y, pieceToMove.x));
-                std::cout << possible_moves.size() << std::endl;
-
-                if(possible_moves.size() > 0)
-                {
-                    // Highlight possible moves.
-                    for(Position x: possible_moves)
-                    {
-                        interface.highlightPosition(x.y, x.x);
-                    }
-                    // Get position of choice.
-                    whitePositions.insert(whitePositions.end(), possible_moves.begin(), possible_moves.end());
-                    Position mouse_pos = interface.mouseClick(whitePositions);
-                    // If player clicks on movable square then move the piece.
-                    if(valueInVector(possible_moves, mouse_pos))
-                    {
-                        // Update board array.
-                        moves.move_piece(pieceToMove, mouse_pos);
-
-                        // Check for eventual pawn promotion.
-                        if(moves.pawnPromotion(mouse_pos))
-                        {
-                            interface.updateScreen();
-                            Position promoted_piece = interface.mouseClick(sidePanelPositions);
-                            moves.promotePawn(mouse_pos, sidePanelMap.at(promoted_piece.y));
-                        }
-                        end = clock();
-                        playerTime+=((double)(end-start))/CLOCKS_PER_SEC;
-                        std::cout << playerTime << std::endl;
-                        break;
-                    }
-
-                    else if(valueInVector(whitePositions, mouse_pos))
-                    {
-                        pieceToMove = mouse_pos;
-                        interface.updateScreen();
-                    }
-                }
-                else
-                {
-                    pieceToMove = interface.mouseClick(whitePositions);
-                }
-            }*/
         }
 
         // Redraw boxes and images.
         interface.updateScreen();
-
-        /*chessBoard.printBoard();
-        for(Position x: moves.documentedMoves)
-        {
-            printf("%d %d\n", x.y, x.x);
-        }*/
         
         round+=1;
     }
