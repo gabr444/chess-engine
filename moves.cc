@@ -254,17 +254,17 @@ std::vector<Square> Moves::king_move(Square pos)
     }
 
     // Check for potential castling-moves.
-    bool castling = true;
     // If king has not been moved.
     if(!movedPosition(pos) && pos.x == 4)
     {
-        for(int x: {0, 7})
+        for(int rookX: {0, 7})
         {
-            if(tolower(*board[pos.y][x]) == 'r' && !movedPosition(get_pos(pos.y, x)) && lowercase == islower(*board[pos.y][x]))
+            bool castling = true;
+            if(tolower(*board[y][rookX]) == 'r' && !movedPosition(get_pos(y, rookX)) && lowercase == islower(*board[y][rookX]))
             {
-                int gap = abs(4-x);
+                int gap = abs(4-rookX);
                 int direction = 1;
-                if(x < 4){ direction = -1; }
+                if(rookX < 4){ direction = -1; }
 
                 for(int i=1;i<gap;i++)
                 {
@@ -276,7 +276,7 @@ std::vector<Square> Moves::king_move(Square pos)
 
                 if(castling)
                 {
-                    moves.push_back(get_pos(pos.y, x));
+                    moves.push_back(get_pos(pos.y, rookX));
                 }
             }
         }   
